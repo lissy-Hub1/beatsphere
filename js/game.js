@@ -1,4 +1,4 @@
-// game.js - Lógica principal del juego con espadas VR (Optimizado)
+// game.js - Lógica principal del juego con espadas VR (Optimizado y corregido)
 import * as THREE from 'three';
 import { VRButton } from 'three/addons/webxr/VRButton.js';
 import { XRControllerModelFactory } from 'three/addons/webxr/XRControllerModelFactory.js';
@@ -19,7 +19,8 @@ export const gameState = {
     beatInterval: 800,
     beatTimer: null,
     clock: new THREE.Clock(),
-    lastHitTime: 0
+    lastHitTime: 0,
+    debugMode: false
 };
 
 // Constantes de colores y configuración
@@ -33,13 +34,14 @@ const COLORS = {
 };
 
 const CONFIG = {
-    SPHERE_RADIUS: 2.5,
+    SPHERE_RADIUS: 0.2,
     SPHERE_VELOCITY: 0.05,
     HIT_COOLDOWN: 200,
     PARTICLE_COUNT: 50,
     BEAT_DISTANCE: -8,
     PLATFORM_SIZE: { w: 8, h: 0.1, d: 20 },
-    WALL_SIZE: { w: 0.1, h: 3, d: 20 }
+    WALL_SIZE: { w: 0.1, h: 3, d: 20 },
+    SWORD_HIT_AREA: { x: 0.15, y: 0.15, z: 0.8 }
 };
 
 // Cache de geometrías y materiales reutilizables
@@ -161,7 +163,8 @@ function setupControllers() {
         controller.userData = {
             isLeft: config.isLeft,
             color: config.color,
-            lastHit: 0
+            lastHit: 0,
+            canHit: true
         };
         
         createSword(controller, config.color);
@@ -225,9 +228,26 @@ function createSword(controller, color) {
     sword.userData.trail = swordTrail;
     sword.add(swordTrail);
     
+    // Área de golpe más precisa
+    const hitAreaSize = new THREE.Vector3(
+        CONFIG.SWORD_HIT_AREA.x,
+        CONFIG.SWORD_HIT_AREA.y,
+        CONFIG.SWORD_HIT_AREA.z
+    );
+    const hitAreaCenter = new THREE.Vector3(0, 0, -0.35);
+    
+    controller.userData.hitArea = new THREE.Box3(
+        new THREE.Vector3().copy(hitAreaCenter).sub(hitAreaSize.clone().multiplyScalar(0.5)),
+        new THREE.Vector3().copy(hitAreaCenter).add(hitAreaSize.clone().multiplyScalar(0.5))
+    );
+    
+    // Helper para debug
+    controller.userData.hitAreaHelper = new THREE.Box3Helper(controller.userData.hitArea, 0xffff00);
+    controller.userData.hitAreaHelper.visible = gameState.debugMode;
+    sword.add(controller.userData.hitAreaHelper);
+    
     controller.add(sword);
     controller.userData.sword = sword;
-    controller.userData.hitArea = new THREE.Box3().setFromObject(blade);
 }
 
 function setupEventListeners() {
@@ -257,6 +277,18 @@ function setupEventListeners() {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+    
+    // Debug mode
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'h') {
+            gameState.debugMode = !gameState.debugMode;
+            gameState.controllers.forEach(c => {
+                if (c.userData.hitAreaHelper) {
+                    c.userData.hitAreaHelper.visible = gameState.debugMode;
+                }
+            });
+        }
     });
 }
 
@@ -310,12 +342,88 @@ function onControllerSelect(controller) {
     updateSwordTrail(controller);
 }
 
+function updateControllerHitAreas() {
+    gameState.controllers.forEach(controller => {
+        if (controller.userData?.sword) {
+            // Actualizar el hitArea con la posición y rotación actual de la espada
+            const sword = controller.userData.sword;
+            const blade = sword.children[0];
+            
+            // Crear una matriz que represente la transformación actual de la espada
+            const matrix = new THREE.Matrix4();
+            matrix.compose(
+                sword.getWorldPosition(new THREE.Vector3()),
+                sword.getWorldQuaternion(new THREE.Quaternion()),
+                sword.getWorldScale(new THREE.Vector3())
+            );
+            
+            // Aplicar la transformación al hitArea
+            const hitArea = controller.userData.hitArea;
+            const center = new THREE.Vector3(0, 0, -0.35);
+            const size = new THREE.Vector3(
+                CONFIG.SWORD_HIT_AREA.x,
+                CONFIG.SWORD_HIT_AREA.y,
+                CONFIG.SWORD_HIT_AREA.z
+            );
+            
+            const min = center.clone().sub(size.clone().multiplyScalar(0.5)).applyMatrix4(matrix);
+            const max = center.clone().add(size.clone().multiplyScalar(0.5)).applyMatrix4(matrix);
+            
+            hitArea.min.copy(min);
+            hitArea.max.copy(max);
+            
+            // Actualizar el helper de debug si está visible
+            if (controller.userData.hitAreaHelper?.visible) {
+                controller.userData.hitAreaHelper.update();
+            }
+        }
+    });
+}
+
+function checkContinuousHits() {
+    const now = Date.now();
+    
+    gameState.controllers.forEach(controller => {
+        // Solo verificar si ha pasado el tiempo de cooldown
+        if (now - controller.userData.lastHit < CONFIG.HIT_COOLDOWN) {
+            controller.userData.canHit = false;
+            return;
+        }
+        controller.userData.canHit = true;
+        
+        // Verificar colisión con todas las esferas activas
+        for (let i = gameState.spheres.length - 1; i >= 0; i--) {
+            const sphere = gameState.spheres[i];
+            if (!sphere.userData.active) continue;
+            
+            const sphereBox = new THREE.Box3().setFromObject(sphere);
+            const isCorrectController = sphere.userData.isRed === controller.userData.isLeft;
+            
+            if (controller.userData.hitArea.intersectsBox(sphereBox)) {
+                if (isCorrectController) {
+                    hitSphere(sphere, i, controller);
+                    controller.userData.lastHit = now;
+                    
+                    // Animación de retroceso
+                    new TWEEN.Tween(controller.userData.sword.rotation)
+                        .to({ x: Math.PI / 3 }, 100)
+                        .yoyo(true)
+                        .start();
+                } else {
+                    gameState.combo = 0;
+                    updateScoreDisplay(gameState.score, gameState.combo);
+                }
+                break;
+            }
+        }
+    });
+}
+
 function checkSphereHit(controller) {
+    if (!controller.userData.canHit) return;
+    
     const now = Date.now();
     if (now - controller.userData.lastHit < CONFIG.HIT_COOLDOWN) return;
-    
-    controller.userData.hitArea.setFromObject(controller.userData.sword.children[0]);
-    let hitSomething = false;
     
     for (let i = gameState.spheres.length - 1; i >= 0; i--) {
         const sphere = gameState.spheres[i];
@@ -327,22 +435,20 @@ function checkSphereHit(controller) {
         if (controller.userData.hitArea.intersectsBox(sphereBox)) {
             if (isCorrectController) {
                 hitSphere(sphere, i, controller);
-                hitSomething = true;
+                controller.userData.lastHit = now;
                 console.log(`✅ Golpe correcto! ${controller.userData.isLeft ? 'Izquierda' : 'Derecha'} (${sphere.userData.isRed ? 'ROJO' : 'AZUL'})`);
+                
+                // Animación de retroceso
+                new TWEEN.Tween(controller.userData.sword.rotation)
+                    .to({ x: Math.PI / 3 }, 100)
+                    .yoyo(true)
+                    .start();
             } else {
                 gameState.combo = 0;
                 updateScoreDisplay(gameState.score, gameState.combo);
             }
-            break; // Solo golpear una esfera por vez
+            break;
         }
-    }
-    
-    if (hitSomething) {
-        controller.userData.lastHit = now;
-        new TWEEN.Tween(controller.userData.sword.rotation)
-            .to({ x: Math.PI / 3 }, 100)
-            .yoyo(true)
-            .start();
     }
 }
 
@@ -371,8 +477,9 @@ function hitSphere(sphere, index, controller) {
     
     const reactionTime = Date.now() - sphere.userData.spawnTime;
     const timeBonus = Math.max(0, 500 - reactionTime) / 10;
+    const pointsEarned = 100 + (gameState.combo * 10) + Math.floor(timeBonus);
     
-    gameState.score += 100 + (gameState.combo * 10) + Math.floor(timeBonus);
+    gameState.score += pointsEarned;
     gameState.combo++;
 
     console.log(`🎯 Puntos: +${pointsEarned} (Combo: ${gameState.combo}) | Tiempo reacción: ${reactionTime}ms`);
@@ -510,6 +617,8 @@ function animate() {
         
         if (gameState.gameActive) {
             updateScene();
+            updateControllerHitAreas();
+            checkContinuousHits();
             updateControllerTrails();
         }
         
