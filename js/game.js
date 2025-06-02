@@ -34,14 +34,14 @@ const COLORS = {
 };
 
 const CONFIG = {
-    SPHERE_RADIUS: 0.2,
+    SPHERE_RADIUS: 0.4,
     SPHERE_VELOCITY: 0.05,
     HIT_COOLDOWN: 200,
     PARTICLE_COUNT: 50,
     BEAT_DISTANCE: -8,
     PLATFORM_SIZE: { w: 8, h: 0.1, d: 20 },
     WALL_SIZE: { w: 0.1, h: 3, d: 20 },
-    SWORD_HIT_AREA: { x: 0.15, y: 0.15, z: 0.8 }
+    SWORD_HIT_AREA: { x: 0.3, y: 0.3, z: 0.8 }
 };
 
 // Cache de geometrías y materiales reutilizables
@@ -330,7 +330,7 @@ function generateBeat() {
     gameState.spheres.push(sphere);
     
     // Animación de aparición
-    sphere.scale.set(0.1, 0.1, 0.1);
+    sphere.scale.set(0.2, 0.2, 0.2);
     new TWEEN.Tween(sphere.scale)
         .to({ x: 1, y: 1, z: 1 }, 800)
         .easing(TWEEN.Easing.Elastic.Out)
@@ -645,7 +645,7 @@ function updateScene() {
 function updateControllerTrails() {
     gameState.controllers.forEach(controller => {
         const trail = controller.userData?.sword?.userData?.trail;
-        if (trail?.material.opacity > 0) {
+        if (trail?.material.opacity > 0) {SPHERE_RADIUS
             trail.material.opacity *= 0.95;
         }
     });
