@@ -482,15 +482,16 @@ function hitSphere(sphere, index, controller) {
     gameState.score += pointsEarned;
     gameState.combo++;
 
-    console.log(`🎯 Puntos: +${pointsEarned} (Combo: ${gameState.combo}) | Tiempo reacción: ${reactionTime}ms`);
-    
     updateScoreDisplay(gameState.score, gameState.combo);
     
-    // Efectos visuales
+    // Crear mitades de la esfera
+    createSphereHalves(sphere, controller);
+    
+    // Efectos adicionales
     createHitParticles(sphere.position, sphere.material.color);
     createHitFlash(controller.userData.sword.position, controller.userData.color);
     
-    // Eliminar esfera
+    // Eliminar esfera original
     gameState.scene.remove(sphere);
     gameState.spheres.splice(index, 1);
     
@@ -502,6 +503,87 @@ function hitSphere(sphere, index, controller) {
     });
 }
 
+function createSphereHalves(originalSphere, controller) {
+    // Crear geometría de media esfera
+    const halfSphereGeometry = new THREE.SphereGeometry(
+        CONFIG.SPHERE_RADIUS, 
+        32, 
+        32, 
+        0, 
+        Math.PI * 2, 
+        0, 
+        Math.PI / 2
+    );
+    
+    // Material basado en la esfera original
+    const material = originalSphere.material.clone();
+    
+    // Crear dos mitades
+    const halves = [];
+    for (let i = 0; i < 2; i++) {
+        const half = new THREE.Mesh(halfSphereGeometry, material);
+        
+        // Posicionar en la misma ubicación que la esfera original
+        half.position.copy(originalSphere.position);
+        half.quaternion.copy(originalSphere.quaternion);
+        
+        // Rotar cada mitad para que formen una esfera completa
+        half.rotation.x = i === 0 ? 0 : Math.PI;
+        
+        // Añadir física simple
+        half.userData = {
+            velocity: new THREE.Vector3(
+                (Math.random() - 0.5) * 0.1, // Movimiento lateral aleatorio
+                Math.random() * 0.1,         // Movimiento hacia arriba
+                (Math.random() + 0.5) * 0.05  // Movimiento hacia adelante
+            ),
+            rotationSpeed: new THREE.Vector3(
+                (Math.random() - 0.5) * 0.1,
+                (Math.random() - 0.5) * 0.1,
+                (Math.random() - 0.5) * 0.1
+            ),
+            lifetime: 2000 // 2 segundos de vida
+        };
+        
+        gameState.scene.add(half);
+        halves.push(half);
+    }
+    
+    // Animación de las mitades
+    const startTime = Date.now();
+    
+    function updateHalves() {
+        const currentTime = Date.now();
+        const elapsed = currentTime - startTime;
+        const progress = elapsed / 2000; // 2 segundos
+        
+        if (progress >= 1) {
+            // Eliminar mitades después de 2 segundos
+            halves.forEach(half => gameState.scene.remove(half));
+            return;
+        }
+        
+        // Actualizar posición y rotación
+        halves.forEach(half => {
+            half.position.x += half.userData.velocity.x;
+            half.position.y += half.userData.velocity.y;
+            half.position.z += half.userData.velocity.z;
+            
+            half.rotation.x += half.userData.rotationSpeed.x;
+            half.rotation.y += half.userData.rotationSpeed.y;
+            half.rotation.z += half.userData.rotationSpeed.z;
+            
+            // Efecto de desvanecimiento
+            half.material.opacity = 1 - progress;
+        });
+        
+        if (progress < 1) {
+            requestAnimationFrame(updateHalves);
+        }
+    }
+    
+    updateHalves();
+}
 function createHitParticles(position, color) {
     const particleCount = CONFIG.PARTICLE_COUNT;
     const particles = new THREE.BufferGeometry();
