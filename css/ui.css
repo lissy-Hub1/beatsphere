@@ -1,0 +1,54 @@
+/* Common UI Elements */
+.btn {
+    padding: 15px 30px;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 50px;
+    background: linear-gradient(45deg, var(--color-primary), var(--color-secondary));
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    box-shadow: 0 0 20px rgba(188, 19, 254, 0.5);
+    margin: 10px 0;
+    outline: none;
+}
+
+.btn:hover {
+    box-shadow: 0 0 30px rgba(188, 19, 254, 0.8);
+}
+
+.btn-secondary {
+    background: transparent;
+    border: 2px solid var(--color-secondary);
+    box-shadow: 0 0 10px rgba(0, 245, 255, 0.5);
+}
+
+.btn-secondary:hover {
+    box-shadow: 0 0 20px rgba(0, 245, 255, 0.8);
+}
+
+.title {
+    font-size: 4rem;
+    background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 10px rgba(188, 19, 254, 0.5);
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.subtitle {
+    font-size: 1.5rem;
+    color: var(--color-light);
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+/* VR Button Styles */
+.vr-button {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+}

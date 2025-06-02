@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BeatSphere VR</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/ui.css">
+    <link rel="stylesheet" href="css/game.css">
+    
+    <script type="importmap">
+        {
+          "imports": {
+                "three": "https://unpkg.com/three@0.163.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.163.0/examples/jsm/",
+                "three/addons/controls/OrbitControls.js": "https://unpkg.com/three@0.163.0/examples/jsm/controls/OrbitControls.js",
+                "cannon-es": "https://cdn.jsdelivr.net/npm/cannon-es@0.20.0/dist/cannon-es.js",
+                "tween.js": "https://cdnjs.cloudflare.com/ajax/libs/tween.js/25.0.0/tween.esm.js"
+            }
+        }
+    </script>
+</head>
+<body>
+    <div id="app-container">
+        <!-- Las pantallas se cargarán aquí dinámicamente -->
+    </div>
+
+    <!-- Solo cargamos main.js como módulo -->
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
