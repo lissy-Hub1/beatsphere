@@ -645,7 +645,7 @@ function updateScene() {
 function updateControllerTrails() {
     gameState.controllers.forEach(controller => {
         const trail = controller.userData?.sword?.userData?.trail;
-        if (trail?.material.opacity > 0) {SPHERE_RADIUS
+        if (trail?.material.opacity > 0) {
             trail.material.opacity *= 0.95;
         }
     });
