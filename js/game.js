@@ -394,7 +394,7 @@ function updateControllerHitAreas() {
     });
 }
 
-function checkContinuousHits() {
+export function checkContinuousHits() {
     const now = Date.now();
     const tempLine = new THREE.Line3();
     const tempVector = new THREE.Vector3();
