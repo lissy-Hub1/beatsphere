@@ -1,7 +1,6 @@
-// ui.js - Manejo de la interfaz de usuario (versión modular)
+// ui.js - Manejo de la interfaz de usuario
 import { showScreen, loadScreen } from './utils.js';
-import { initGame, pauseGame, resumeGame, cleanupGame } from './core.js';
-import { gameState } from './config.js';
+import { initGame, pauseGame, resumeGame, cleanupGame, gameState } from './game.js';
 
 // Variables globales de UI
 let currentScreen = 'home';
@@ -64,58 +63,22 @@ export function updateScoreDisplay(score, combo) {
     const comboElement = document.getElementById('combo-value');
     
     if (scoreElement) scoreElement.textContent = score;
-    if (comboElement) {
-        comboElement.textContent = `${combo}x`;
-        
-        // Efectos visuales de combo
-        if (combo > 5) {
-            comboElement.classList.add('combo-high');
-            comboElement.style.animation = 'pulse 0.5s';
-            setTimeout(() => {
-                comboElement.style.animation = '';
-            }, 500);
-        } else {
-            comboElement.classList.remove('combo-high');
-        }
-    }
+    if (comboElement) comboElement.textContent = `${combo}x`;
 }
 
 // Inicializar la interfaz de usuario
-export async function initUI() {
-    try {
-        // Cargar todas las pantallas
-        const screens = ['home', 'game', 'howtoplay', 'credits'];
-        for (const screen of screens) {
-            await loadScreen(screen);
-        }
-        
-        // Configurar eventos
-        setupUIEvents();
-        
-        // Mostrar pantalla de inicio
-        showScreen('home');
-        
-        // Inicializar elementos VR si existen
-        const vrButton = document.getElementById('vr-button');
-        if (vrButton) {
-            vrButton.addEventListener('click', () => {
-                if (currentScreen !== 'game') {
-                    showScreen('game');
-                    initGame();
-                }
-            });
-        }
-    } catch (error) {
-        console.error('Error al inicializar la UI:', error);
-        // Mostrar mensaje de error al usuario
-        alert('Error al cargar la interfaz. Por favor recarga la página.');
+async function initUI() {
+    // Cargar todas las pantallas
+    const screens = ['home', 'game', 'howtoplay', 'credits'];
+    for (const screen of screens) {
+        await loadScreen(screen);
     }
+    
+    // Configurar eventos
+    setupUIEvents();
+    
+    // Mostrar pantalla de inicio
+    showScreen('home');
 }
 
-// Función para mostrar/ocultar elementos VR
-export function toggleVRElements(visible) {
-    const vrElements = document.querySelectorAll('.vr-element');
-    vrElements.forEach(el => {
-        el.style.display = visible ? 'block' : 'none';
-    });
-}
+export { initUI, togglePauseMenu };
