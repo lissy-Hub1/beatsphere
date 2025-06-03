@@ -58,7 +58,7 @@ export const CONFIG = {
         OFFSET: -0.4
     },
     SWORD_HIT_RADIUS : 0.2,
-    PARTICLE_COUNT: 50,
+    PARTICLE_COUNT: 0,
     BEAT_DISTANCE: -8,
     PLATFORM_SIZE: { w: 8, h: 0.1, d: 20 },
     WALL_SIZE: { w: 0.1, h: 3, d: 20 },
