@@ -1,19 +1,58 @@
-/* Common UI Elements */
+/* Contenedores principales */
+.howto-content, 
+.home-content, 
+.credits-content {
+    padding: 40px;
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 20px;
+    width: 90%;
+    max-width: 800px;
+    margin: auto;
+    border: 1px solid rgba(0, 245, 255, 0.2);
+    box-shadow: 0 0 30px rgba(188, 19, 254, 0.3);
+}
+
+/* Títulos */
+.title {
+    font-size: clamp(2.5rem, 8vw, 4rem);
+    background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    line-height: 1.2;
+}
+
+.subtitle {
+    font-size: 1.25rem;
+    color: var(--color-light);
+    margin-bottom: 2.5rem;
+    text-align: center;
+    opacity: 0.9;
+}
+
+/* Botones */
 .btn {
     padding: 15px 30px;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     border: none;
     border-radius: 50px;
     background: linear-gradient(45deg, var(--color-primary), var(--color-secondary));
     color: white;
     text-transform: uppercase;
-    letter-spacing: 2px;
+    letter-spacing: 1px;
     box-shadow: 0 0 20px rgba(188, 19, 254, 0.5);
     margin: 10px 0;
     outline: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    max-width: 250px;
+    display: block;
 }
 
 .btn:hover {
+    transform: translateY(-3px);
     box-shadow: 0 0 30px rgba(188, 19, 254, 0.8);
 }
 
@@ -24,31 +63,141 @@
 }
 
 .btn-secondary:hover {
+    background: rgba(0, 245, 255, 0.1);
     box-shadow: 0 0 20px rgba(0, 245, 255, 0.8);
 }
 
-.title {
-    font-size: 4rem;
-    background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-shadow: 0 0 10px rgba(188, 19, 254, 0.5);
-    margin-bottom: 2rem;
-    text-align: center;
+/* Menú de opciones */
+.menu-options {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    margin: 2rem 0;
+    width: 100%;
 }
 
-.subtitle {
-    font-size: 1.5rem;
+/* Tarjetas de instrucciones */
+.instructions, .credits-list {
+    margin: 2rem 0;
+}
+
+.instruction-card, .credit-item {
+    background-color: rgba(0, 0, 0, 0.4);
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 20px;
+    border-left: 4px solid var(--color-secondary);
+}
+
+.instruction-card h3, .credit-item h3 {
+    color: var(--color-secondary);
+    margin-bottom: 15px;
+    font-size: 1.4rem;
+}
+
+.instruction-card p, .instruction-card ul, .credit-item p {
     color: var(--color-light);
-    margin-bottom: 2rem;
-    text-align: center;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-left: 0;
+    opacity: 0.9;
 }
 
-/* VR Button Styles */
+.instruction-card ul {
+    padding-left: 20px;
+}
+
+.instruction-card li {
+    margin-bottom: 10px;
+}
+
+/* Nota VR */
+.vr-notice {
+    margin-top: 2rem;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+    text-align: center;
+    width: 100%;
+}
+
+/* Game UI */
+.game-ui {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 95%;
+    max-width: 1200px;
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 25px;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 50px;
+    backdrop-filter: blur(5px);
+    z-index: 100;
+}
+
+.score-display, .combo-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 120px;
+}
+
+.score-label, .combo-label {
+    font-size: 0.9rem;
+    color: var(--color-light);
+    opacity: 0.8;
+}
+
+.score-value, .combo-value {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: white;
+}
+
+/* Pause menu */
+.pause-menu {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.9);
+    padding: 40px;
+    border-radius: 20px;
+    text-align: center;
+    width: 90%;
+    max-width: 500px;
+    border: 1px solid rgba(0, 245, 255, 0.3);
+    z-index: 200;
+}
+
+.pause-menu h2 {
+    margin-bottom: 2rem;
+    color: var(--color-secondary);
+}
+
+/* VR Button */
 .vr-button {
     position: absolute;
-    bottom: 20px;
+    bottom: 30px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 1000;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .home-content, .howto-content, .credits-content {
+        padding: 30px 20px;
+    }
+    
+    .title {
+        font-size: 2.5rem;
+    }
+    
+    .subtitle {
+        font-size: 1.1rem;
+    }
 }

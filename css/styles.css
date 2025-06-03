@@ -1,3 +1,4 @@
+/* ===== styles.css ===== */
 :root {
     --color-primary: #BC13FE;
     --color-secondary: #00F5FF;
@@ -27,6 +28,9 @@ body {
     position: relative;
     width: 100%;
     height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .screen {
@@ -38,24 +42,14 @@ body {
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.5s ease-in-out;
-    overflow: hidden;
+    overflow-y: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
 }
 
 .screen.active {
     opacity: 1;
     pointer-events: all;
-}
-
-button {
-    font-family: 'Orbitron', sans-serif;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-button:hover {
-    transform: scale(1.05);
-}
-
-canvas {
-    display: block;
 }

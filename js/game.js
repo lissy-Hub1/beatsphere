@@ -25,12 +25,12 @@ export const gameState = {
 
 // Constantes de colores y configuración
 const COLORS = {
-    RED: '#FF0040',
-    BLUE: '#0080FF',
-    PARTICLE: '#FFFF00',
-    SWORD_RED: '#FF3333',
-    SWORD_BLUE: '#3399FF',
-    HANDLE: '#333333'
+    RED: getComputedStyle(document.documentElement).getPropertyValue('--color-secondary').trim(),
+    BLUE: getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim(),
+    PARTICLE: getComputedStyle(document.documentElement).getPropertyValue('--color-accent').trim(),
+    SWORD_RED: getComputedStyle(document.documentElement).getPropertyValue('--color-secondary').trim(),
+    SWORD_BLUE: getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim(),
+    HANDLE: getComputedStyle(document.documentElement).getPropertyValue('--color-dark').trim()
 };
 
 const CONFIG = {
@@ -621,6 +621,7 @@ function createSphereHalves(originalSphere, controller) {
     
     updateHalves();
 }
+
 function createHitParticles(position, color) {
     const particleCount = CONFIG.PARTICLE_COUNT;
     const particles = new THREE.BufferGeometry();
@@ -660,7 +661,22 @@ function createHitParticles(position, color) {
     const particleSystem = new THREE.Points(particles, particleMaterial);
     gameState.scene.add(particleSystem);
     
+    const startTime = Date.now();
+    
     const animateParticles = () => {
+        const currentTime = Date.now();
+        const elapsed = currentTime - startTime;
+        const progress = elapsed / 2000; // 2 segundos
+        
+        if (progress >= 1) {
+            // Eliminar partículas después de 2 segundos
+            gameState.scene.remove(particleSystem);
+            particles.dispose();
+            particleMaterial.dispose();
+            return;
+        }
+        
+        // Actualizar posición de las partículas
         const pos = particles.attributes.position.array;
         for (let i = 0; i < pos.length; i += 3) {
             pos[i] += (Math.random() - 0.5) * 0.02;
@@ -668,13 +684,16 @@ function createHitParticles(position, color) {
             pos[i + 2] += (Math.random() - 0.5) * 0.02;
         }
         particles.attributes.position.needsUpdate = true;
+        
+        // Desvanecer gradualmente
+        particleMaterial.opacity = 1 - progress;
+        
+        if (progress < 1) {
+            requestAnimationFrame(animateParticles);
+        }
     };
     
-    new TWEEN.Tween(particleMaterial)
-        .to({ opacity: 0 }, 1000)
-        .onUpdate(animateParticles)
-        .onComplete(() => gameState.scene.remove(particleSystem))
-        .start();
+    animateParticles();
 }
 
 function createHitFlash(position, color) {
