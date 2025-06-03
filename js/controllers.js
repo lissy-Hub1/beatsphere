@@ -224,8 +224,17 @@ function checkSphereHit(controller) {
 }
 
 function hitSphere(sphere, index, controller) {
-    sphere.userData.active = false;
+
+    gameState.renderer.xr.getSession().requestAnimationFrame(() => {
+        sphere.visible = false;
+        gameState.scene.remove(sphere);
+    });
     
+    sphere.userData.active = false;
+
+    gameState.spheres.splice(index, 1);
+    gameState.scene.remove(sphere);
+
     const reactionTime = Date.now() - sphere.userData.spawnTime;
     const timeBonus = Math.max(0, 500 - reactionTime) / 10;
     const pointsEarned = 100 + (gameState.combo * 10) + Math.floor(timeBonus);
@@ -238,11 +247,10 @@ function hitSphere(sphere, index, controller) {
     createHitParticles(sphere.position, sphere.material.color);
     createHitFlash(controller.userData.sword.position, controller.userData.color);
     
-    // Eliminar la esfera correctamente
-    gameState.scene.remove(sphere);
+    
     sphere.geometry.dispose();
     sphere.material.dispose();
-    gameState.spheres.splice(index, 1);
+    
     
     // Feedback háptico
     gameState.controllers.forEach(c => {
