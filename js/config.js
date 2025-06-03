@@ -66,7 +66,9 @@ export const CONFIG = {
 
 // Función global de actualización de puntuación
 export function updateScoreDisplay(score, combo) {
-    // Implementación de tu UI
-    document.getElementById('score').textContent = score;
-    document.getElementById('combo').textContent = combo;
+    const scoreElement = document.getElementById('score-value');
+    const comboElement = document.getElementById('combo-value');
+    
+    if (scoreElement) scoreElement.textContent = score;
+    if (comboElement) comboElement.textContent = `${combo}x`;
 }

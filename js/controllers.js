@@ -1,7 +1,8 @@
 // controllers.js - Manejo de controles VR y espadas
 import * as THREE from 'three';
-import { gameState, COLORS, CONFIG } from './config.js';
+import { gameState, COLORS, CONFIG, getGeometry,getMaterial,updateScoreDisplay } from './config.js';
 import * as TWEEN from 'tween.js';
+import { XRControllerModelFactory } from 'three/addons/webxr/XRControllerModelFactory.js';
 
 export function setupControllers() {
     const controllerConfigs = [
@@ -220,7 +221,7 @@ function checkSphereHit(controller) {
     }
 }
 
-function checkContinuousHits() {
+export function checkContinuousHits() {
     const now = Date.now();
     const tempLine = new THREE.Line3();
     const tempVector = new THREE.Vector3();

@@ -1,11 +1,11 @@
 // core.js - Configuración básica y núcleo del juego
 import * as THREE from 'three';
 import { VRButton } from 'three/addons/webxr/VRButton.js';
-import { XRControllerModelFactory } from 'three/addons/webxr/XRControllerModelFactory.js';
+
 import * as TWEEN from 'tween.js';
-import { gameState, COLORS, CONFIG } from './config.js';
-import { setupEnvironment, setupLights } from './scene-setup.js';
-import { setupControllers, updateControllerHitAreas, updateControllerTrails } from './controllers.js';
+import { gameState, COLORS, CONFIG,getGeometry,updateScoreDisplay  } from './config.js';
+import { setupEnvironment, setupLights } from './scene_setup.js';
+import { setupControllers, updateControllerHitAreas, updateControllerTrails,checkContinuousHits} from './controllers.js';
 import { generateBeat, updateScene } from './game-logic.js';
 
 // Inicializar el juego
