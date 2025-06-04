@@ -102,6 +102,26 @@ function startBeatGeneration() {
     gameState.beatTimer = setInterval(generateBeat, gameState.beatInterval);
 }
 
+function endGame() {
+    if (gameState.gameEnded) return;
+    
+    gameState.gameActive = false;
+    gameState.gameEnded = true;
+    clearInterval(gameState.beatTimer);
+    
+    beatIndex = BEAT_PATTERN.length;
+    
+    // Limpiar esferas restantes
+    gameState.spheres.forEach(sphere => {
+        gameState.scene.remove(sphere);
+        sphere.geometry.dispose();
+        sphere.material.dispose();
+    });
+    gameState.spheres = [];
+  
+    showFinalResults();
+}
+
 function initBackgroundMusic() {
     backgroundMusic = new Audio('../assets/audio/crazy.mp3');
     backgroundMusic.volume = 0.5;
