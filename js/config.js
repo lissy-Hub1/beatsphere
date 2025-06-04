@@ -44,7 +44,11 @@ export const COLORS = {
     PARTICLE: getComputedStyle(document.documentElement).getPropertyValue('--color-accent').trim(),
     SWORD_RED: getComputedStyle(document.documentElement).getPropertyValue('--color-secondary').trim(),
     SWORD_BLUE: getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim(),
-    HANDLE: getComputedStyle(document.documentElement).getPropertyValue('--color-dark').trim()
+    HANDLE: getComputedStyle(document.documentElement).getPropertyValue('--color-dark').trim(),
+    TRON_BLUE : 0x191970,
+    TRON_CYAN : 0x00f6ff,
+    TRON_ORANGE : 0xff6600,
+    TRON_PURPLE : 0xcc00ff,
 };
 
 // Configuración del juego
@@ -63,6 +67,16 @@ export const CONFIG = {
     PLATFORM_SIZE: { w: 8, h: 0.1, d: 20 },
     WALL_SIZE: { w: 0.1, h: 3, d: 20 },
     SWORD_HIT_AREA: { x: 0.3, y: 0.3, z: 0.8 }
+};
+
+export const AUDIO = {
+    SONG_URL: 'assets/sounds/game-music.mp3', // Cambia esta ruta
+    VOLUME: 0.7,
+    FADE_DURATION: 2 // Segundos para fade out
+};
+
+export const UI = {
+    RESULTS_DISPLAY_TIME: 10000 // 10 segundos
 };
 
 // Función global de actualización de puntuación

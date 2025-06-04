@@ -8,6 +8,8 @@ import { setupEnvironment, setupLights } from './scene_setup.js';
 import { setupControllers, updateControllerHitAreas, updateControllerTrails,checkContinuousHits} from './controllers.js';
 import { generateBeat, updateScene } from './game-logic.js';
 
+let backgroundMusic;
+
 // Inicializar el juego
 export function initGame() {
     setupScene();
@@ -63,6 +65,12 @@ function setupEventListeners() {
         updateScoreDisplay(gameState.score, gameState.combo);
         startBeatGeneration();
         camera.position.set(0, 1.6, 0);
+        if (!backgroundMusic) initBackgroundMusic();
+        backgroundMusic.play();
+
+        backgroundMusic.onended = () => {
+            endGame();
+        };
     });
     
     renderer.xr.addEventListener('sessionend', () => {
@@ -92,6 +100,15 @@ function setupEventListeners() {
 
 function startBeatGeneration() {
     gameState.beatTimer = setInterval(generateBeat, gameState.beatInterval);
+}
+
+function initBackgroundMusic() {
+    backgroundMusic = new Audio('../assets/audio/crazy.mp3');
+    backgroundMusic.volume = 0.5;
+    backgroundMusic.loop = false;
+
+    // Iniciar música desde cierto segundo cuando empiece el juego
+    backgroundMusic.currentTime = 8; // <-- Empieza desde el segundo 8
 }
 
 // Bucle de animación

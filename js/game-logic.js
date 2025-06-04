@@ -3,6 +3,11 @@ import * as THREE from 'three';
 import { gameState, COLORS, CONFIG, getGeometry, updateScoreDisplay } from './config.js';
 import * as TWEEN from 'tween.js';
 
+
+gameState.maxCombo = 0;
+gameState.successfulHits = 0;
+gameState.totalHits = 0;
+
 export function generateBeat() {
     if (!gameState.gameActive) return;
 
