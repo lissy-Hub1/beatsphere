@@ -123,7 +123,7 @@ function endGame() {
 }
 
 function initBackgroundMusic() {
-    backgroundMusic = new Audio('./assets/audio/crazy.mp3');
+    backgroundMusic = new Audio('.../assets/audio/crazy.mp3');
     backgroundMusic.volume = 0.5;
     backgroundMusic.loop = false;
 
